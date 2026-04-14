@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Cloud Computing Quiz</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body.login-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        body.login-page::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        body.login-page::after {
+            content: '';
+            position: absolute;
+            bottom: -50%;
+            left: -10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite 2s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body class="login-page">
+
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center" style="position: relative; z-index: 1;">
+    <div class="card shadow-lg border-0 rounded-4" style="max-width: 400px; width: 100%; backdrop-filter: blur(10px);">
+        <div class="card-body p-5">
+            <div class="text-center mb-4">
+                <img src="images/login-user.svg" alt="Login" class="mb-3" style="width: 100px; height: 100px; animation: bounce 2s infinite;">
+                <h1 class="display-6 fw-bold text-primary mb-3">
+                    Login
+                </h1>
+                <p class="text-muted">Access your Cloud Computing Quiz account</p>
+            </div>
+
+            <form>
+                <div class="mb-3">
+                    <label for="email" class="form-label fw-semibold">Email Address</label>
+                    <input type="email" class="form-control form-control-lg" id="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="password" class="form-label fw-semibold">Password</label>
+                    <input type="password" class="form-control form-control-lg" id="password" placeholder="Enter your password" required>
+                </div>
+
+                <div class="d-grid">
+                    <button type="button" onclick="login()" class="btn btn-primary btn-lg fw-semibold" style="border-radius: 25px; padding: 12px 30px;">
+                        <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                    </button>
+                </div>
+            </form>
+
+            <div class="text-center mt-4">
+                <p class="mb-0 text-muted">Don't have an account?
+                    <a href="register.html" class="text-primary fw-semibold text-decoration-none">Register here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script src="auth.js"></script>
+</body>
+</html>
