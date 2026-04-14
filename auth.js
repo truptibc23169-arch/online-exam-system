@@ -1,148 +1,183 @@
-// Validation Functions
+// 🔥 Firebase Imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut 
+} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+
+
+// 🔥 Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyCWPbll8-LaU3p2fz-5ry2a9MQvSLZzqXk",
+  authDomain: "online-exam-system-e32d6.firebaseapp.com",
+  projectId: "online-exam-system-e32d6",
+};
+
+// 🔥 Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+
+
+// ================= VALIDATIONS =================
+
 function validateEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
 }
 
 function validatePassword(password) {
-    // At least 6 characters
-    if (password.length < 6) {
-        return { valid: false, message: "Password must be at least 6 characters long" };
-    }
-    // At least one number
-    if (!/\d/.test(password)) {
-        return { valid: false, message: "Password must contain at least one number" };
-    }
-    // At least one capital letter
-    if (!/[A-Z]/.test(password)) {
-        return { valid: false, message: "Password must contain at least one capital letter" };
-    }
-    return { valid: true, message: "Password is strong" };
+  if (password.length < 6) {
+    return { valid: false, message: "Password must be at least 6 characters long" };
+  }
+  if (!/\d/.test(password)) {
+    return { valid: false, message: "Password must contain at least one number" };
+  }
+  if (!/[A-Z]/.test(password)) {
+    return { valid: false, message: "Password must contain at least one capital letter" };
+  }
+  return { valid: true };
 }
 
 function validateName(name) {
-    if (name.trim().length < 3) {
-        return false;
-    }
-    return /^[a-zA-Z\s]+$/.test(name);
+  return name.trim().length >= 3 && /^[a-zA-Z\s]+$/.test(name);
 }
 
-// REGISTER
-function register() {
-    const name = document.getElementById("name").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const pass = document.getElementById("password").value;
-    const confirmPass = document.getElementById("confirm-password") ? document.getElementById("confirm-password").value : pass;
 
-    // Validation
-    if (!name || !email || !pass) {
-        showAlert("Please fill all fields", "danger");
-        return;
-    }
 
-    if (!validateName(name)) {
-        showAlert("Name must be at least 3 characters and contain only letters", "danger");
-        return;
-    }
+// ================= REGISTER =================
 
-    if (!validateEmail(email)) {
-        showAlert("Please enter a valid email address", "danger");
-        return;
-    }
+window.register = async function () {
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const pass = document.getElementById("password").value;
+  const confirmPass = document.getElementById("confirm-password").value;
 
-    const passwordValidation = validatePassword(pass);
-    if (!passwordValidation.valid) {
-        showAlert(passwordValidation.message, "danger");
-        return;
-    }
+  // Validation
+  if (!name || !email || !pass || !confirmPass) {
+    showAlert("Please fill all fields", "danger");
+    return;
+  }
 
-    if (pass !== confirmPass) {
-        showAlert("Passwords do not match", "danger");
-        return;
-    }
+  if (!validateName(name)) {
+    showAlert("Name must be at least 3 characters and only letters", "danger");
+    return;
+  }
 
-    // Check if email already exists
-    const existingUser = localStorage.getItem(email);
-    if (existingUser) {
-        showAlert("Email already registered. Please login or use a different email.", "warning");
-        return;
-    }
+  if (!validateEmail(email)) {
+    showAlert("Invalid email format", "danger");
+    return;
+  }
 
-    const user = { name, email, pass, registeredDate: new Date().toLocaleDateString() };
-    localStorage.setItem(email, JSON.stringify(user));
+  const passwordCheck = validatePassword(pass);
+  if (!passwordCheck.valid) {
+    showAlert(passwordCheck.message, "danger");
+    return;
+  }
 
-    showAlert("Registered Successfully! Redirecting to login...", "success");
+  if (pass !== confirmPass) {
+    showAlert("Passwords do not match", "danger");
+    return;
+  }
+
+  try {
+    // 🔥 Firebase Signup
+    await createUserWithEmailAndPassword(auth, email, pass);
+
+    // 🔥 Save to MongoDB
+    await fetch("http://localhost:3000/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ name, email, password: pass })
+    });
+
+    localStorage.setItem("currentUser", JSON.stringify({ name, email }));
+
+    showAlert("Registered Successfully!", "success");
+
     setTimeout(() => {
-        window.location.href = "login.html";
+      window.location.href = "login.html";
     }, 1500);
-}
 
-// LOGIN
-function login() {
-    const email = document.getElementById("email").value.trim();
-    const pass = document.getElementById("password").value;
+  } catch (err) {
+    showAlert(err.message, "danger");
+  }
+};
 
-    if (!email || !pass) {
-        showAlert("Please fill all fields", "danger");
-        return;
-    }
 
-    if (!validateEmail(email)) {
-        showAlert("Please enter a valid email address", "danger");
-        return;
-    }
 
-    const user = JSON.parse(localStorage.getItem(email));
+// ================= LOGIN =================
 
-    if (!user) {
-        showAlert("Email not found. Please register first.", "info");
-        return;
-    }
+window.login = function () {
+  const email = document.getElementById("email").value.trim();
+  const pass = document.getElementById("password").value;
 
-    if (user.pass !== pass) {
-        showAlert("Incorrect password. Please try again.", "danger");
-        return;
-    }
+  if (!email || !pass) {
+    showAlert("Please fill all fields", "danger");
+    return;
+  }
 
-    localStorage.setItem("currentUser", JSON.stringify(user));
-    localStorage.setItem("loginTime", new Date().getTime());
-    showAlert("Login successful! Redirecting to dashboard...", "success");
-    setTimeout(() => {
+  if (!validateEmail(email)) {
+    showAlert("Invalid email format", "danger");
+    return;
+  }
+
+  // 🔥 Firebase Login
+  signInWithEmailAndPassword(auth, email, pass)
+    .then(() => {
+      localStorage.setItem("currentUser", JSON.stringify({ email }));
+      localStorage.setItem("loginTime", new Date().getTime());
+
+      showAlert("Login Successful!", "success");
+
+      setTimeout(() => {
         window.location.href = "dashboard.html";
-    }, 1500);
-}
+      }, 1500);
+    })
+    .catch(err => showAlert(err.message, "danger"));
+};
 
-// LOGOUT
-function logout() {
+
+
+// ================= LOGOUT =================
+
+window.logout = function () {
+  signOut(auth).then(() => {
     localStorage.removeItem("currentUser");
     localStorage.removeItem("loginTime");
+
     showAlert("Logged out successfully!", "info");
+
     setTimeout(() => {
-        window.location.href = "login.html";
+      window.location.href = "login.html";
     }, 1000);
-}
+  });
+};
+
+
+
+// ================= ALERT FUNCTION =================
 
 function showAlert(message, type) {
-    // Remove existing alerts
-    const existingAlert = document.querySelector('.alert');
-    if (existingAlert) {
-        existingAlert.remove();
-    }
+  const existingAlert = document.querySelector('.alert');
+  if (existingAlert) existingAlert.remove();
 
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
+  const alertDiv = document.createElement('div');
+  alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+  alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
 
-    document.body.appendChild(alertDiv);
+  alertDiv.innerHTML = `
+    ${message}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  `;
 
-    // Auto dismiss after 3 seconds
-    setTimeout(() => {
-        if (alertDiv.parentNode) {
-            alertDiv.remove();
-        }
-    }, 3000);
+  document.body.appendChild(alertDiv);
+
+  setTimeout(() => {
+    if (alertDiv.parentNode) alertDiv.remove();
+  }, 3000);
 }

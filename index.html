@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Online Exam System</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      width: 320px;
+      text-align: center;
+      box-shadow: 0px 10px 25px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      margin-bottom: 15px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #667eea;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #5a67d8;
+    }
+
+    .toggle {
+      margin-top: 15px;
+      cursor: pointer;
+      color: #667eea;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2 id="title">Signup</h2>
+
+  <input type="email" id="email" placeholder="Enter Email">
+  <input type="password" id="password" placeholder="Enter Password">
+
+  <button id="actionBtn">Signup</button>
+
+  <div class="toggle" onclick="toggleMode()">
+    Already have an account? Login
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } 
+  from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCWPbll8-LaU3p2fz-5ry2a9MQvSLZzqXk",
+    authDomain: "online-exam-system-e32d6.firebaseapp.com",
+    projectId: "online-exam-system-e32d6",
+    storageBucket: "online-exam-system-e32d6.firebasestorage.app",
+    messagingSenderId: "376787355155",
+    appId: "1:376787355155:web:36d9157b39f97fef24a1e6",
+    measurementId: "G-T9303HENX9"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  console.log("Firebase Connected ✅");
+
+  let isLogin = false;
+
+  const title = document.getElementById("title");
+  const actionBtn = document.getElementById("actionBtn");
+
+  actionBtn.addEventListener("click", () => {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    if (isLogin) {
+      // LOGIN
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          alert("Login Successful 🎉");
+        })
+        .catch(err => alert(err.message));
+    } else {
+      // SIGNUP
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          alert("Signup Successful 🎉");
+        })
+        .catch(err => alert(err.message));
+    }
+  });
+
+  window.toggleMode = function () {
+    isLogin = !isLogin;
+
+    if (isLogin) {
+      title.innerText = "Login";
+      actionBtn.innerText = "Login";
+      document.querySelector(".toggle").innerText = "Don't have an account? Signup";
+    } else {
+      title.innerText = "Signup";
+      actionBtn.innerText = "Signup";
+      document.querySelector(".toggle").innerText = "Already have an account? Login";
+    }
+  }
+</script>
+
+</body>
+</html>
