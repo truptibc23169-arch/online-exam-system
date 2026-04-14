@@ -1,123 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Cloud Computing Quiz</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-
-    <style>
-        body.login-page {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        body.login-page::before,
-        body.login-page::after {
-            content: '';
-            position: absolute;
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        body.login-page::before {
-            top: -50%;
-            right: -10%;
-            width: 500px;
-            height: 500px;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        body.login-page::after {
-            bottom: -50%;
-            left: -10%;
-            width: 300px;
-            height: 300px;
-            background: rgba(255, 255, 255, 0.05);
-            animation-delay: 2s;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body class="login-page">
 
-<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center">
-    <div class="card shadow-lg border-0 rounded-4" style="max-width: 400px; width: 100%;">
-        <div class="card-body p-5">
+<div class="container d-flex justify-content-center align-items-center vh-100">
 
-            <div class="text-center mb-4">
-                <h1 class="fw-bold text-primary">Login</h1>
-                <p class="text-muted">Access your account</p>
-            </div>
+  <div class="card p-4 shadow" style="width:400px">
 
-            <div class="mb-3">
-                <input type="email" id="email" class="form-control form-control-lg" placeholder="Enter email">
-            </div>
+    <h2 class="text-center text-primary">Login</h2>
 
-            <div class="mb-4">
-                <input type="password" id="password" class="form-control form-control-lg" placeholder="Enter password">
-            </div>
+    <input id="email" class="form-control mb-2" placeholder="Email">
+    <input id="password" type="password" class="form-control mb-3" placeholder="Password">
 
-            <div class="d-grid">
-                <button onclick="login()" class="btn btn-primary btn-lg">Sign In</button>
-            </div>
+    <button onclick="login()" class="btn btn-primary w-100">Login</button>
 
-            <div class="text-center mt-4">
-                <p>Don't have an account?
-                    <a href="register.html">Register</a>
-                </p>
-            </div>
+    <p class="text-center mt-3">
+      New user? <a href="./register.html">Register</a>
+    </p>
 
-        </div>
-    </div>
+  </div>
+
 </div>
 
-<!-- Bootstrap -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- 🔥 Firebase LOGIN -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } 
-from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCWPbll8-LaU3p2fz-5ry2a9MQvSLZzqXk",
-  authDomain: "online-exam-system-e32d6.firebaseapp.com",
-  projectId: "online-exam-system-e32d6"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-// LOGIN FUNCTION
-window.login = function () {
-    const email = document.getElementById("email").value.trim();
-    const pass = document.getElementById("password").value;
-
-    if (!email || !pass) {
-        alert("Please fill all fields");
-        return;
-    }
-
-    signInWithEmailAndPassword(auth, email, pass)
-        .then(() => {
-            localStorage.setItem("currentUser", JSON.stringify({ email }));
-            alert("Login Successful 🎉");
-            window.location.href = "dashboard.html";
-        })
-        .catch(err => alert(err.message));
-};
-</script>
+<script type="module" src="./auth.js"></script>
 
 </body>
 </html>
